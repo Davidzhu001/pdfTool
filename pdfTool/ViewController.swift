@@ -15,18 +15,19 @@ class ViewController: NSViewController {
 
     @IBOutlet weak var inputValue: NSTextField!
     @IBOutlet weak var pdfViewer: PDFView!
-    var pdfview = PDFDocument()
-    var globalUrl = PDFDocument();
-    
+    var globalPDF = PDFDocument();
+    var newPdf = PDFDocument();
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let path =  Bundle.main.path(forResource: "myPDF", ofType: "pdf")!
         let url = NSURL(fileURLWithPath: path)
         let pdf = PDFDocument(url: url as URL)
-        self.globalUrl = pdf!
+        self.globalPDF = pdf!
+        self.pdfViewer.autoScales = true;
         print(pdf?.pageCount)
-        let pageTow = pdf?.page(at: 5)
+        
+        let pageTow = pdf?.page(at: 2)
 
         self.pdfViewer.document = pdf
     }
@@ -37,8 +38,26 @@ class ViewController: NSViewController {
         }
     }
     @IBAction func confirmButton(_ sender: Any) {
-        var inputVaule = self.inputValue.intValue
-        self.pdfViewer.go(to:  self.globalUrl.page(at: Int(inputVaule))! )
+        let inputInt = Int(self.inputValue.intValue)
+        if inputInt < (self.pdfViewer.document?.pageCount)! {
+            self.pdfViewer.go(to:  self.globalPDF.page(at: inputInt)! )
+            newPdf.insert((self.pdfViewer.document?.page(at: inputInt))!, at: 0)
+            print(newPdf.pageCount)
+            
+            do {
+                try newPdf.write(to: getDocumentsDirectory())
+            } catch {
+                print(error)
+            }
+        } else
+        {
+            currentPageLabel.stringValue = "Out of page number"
+        }
+    }
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        return documentsDirectory.appendingPathComponent("test.pdf")
     }
     
 }
