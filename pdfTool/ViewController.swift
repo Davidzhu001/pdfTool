@@ -45,7 +45,7 @@ class ViewController: NSViewController {
             print(newPdf.pageCount)
             
             do {
-                try newPdf.write(to: getDocumentsDirectory())
+                try newPdf.write(to: getDocumentsDirectory(filename: "you guess"))
             } catch {
                 print(error)
             }
@@ -54,10 +54,10 @@ class ViewController: NSViewController {
             currentPageLabel.stringValue = "Out of page number"
         }
     }
-    func getDocumentsDirectory() -> URL {
+    func getDocumentsDirectory(filename :String) -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentsDirectory = paths[0]
-        return documentsDirectory.appendingPathComponent("test.pdf")
+        return documentsDirectory.appendingPathComponent(filename + ".pdf")
     }
     
 }
